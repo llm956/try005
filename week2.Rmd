@@ -1,0 +1,149 @@
+---
+title: "W2practical"
+output:
+  pdf_document: default
+  html_document: default
+date: "2022-10-18"
+---
+
+学习结果
+Execute basic processing in R
+Examine, clean and manipulate comma seperate value (.csv) data
+Examine, clean and manipulate and plot spatial (.shp) data
+Produce interactive maps
+Evaluate the benefits of different data manipulation and mapping techniqueExecute basic processing in R
+
+插入代码快捷键alt+start+i
+
+任务：计算每个县理科生成绩中达到所需标准的平均百分比，并制作一张地图以显示该地区的平均水平高于或低于华盛顿州的平均水平。
+
+#2.4画图的方法
+```{r}
+#2.4.8reate some datasets, first a vector of 1-100 and 101-200
+Data1 <- c(1:100)
+Data2 <- c(101:200)
+#Plot the data
+plot(Data1, Data2, col="red")
+
+#just for fun, create some more, this time some normally distributed
+#vectors of 100 numbers
+Data3 <- rnorm(100, mean = 53, sd=34)
+Data4 <- rnorm(100, mean = 64, sd=14)
+#plot
+plot(Data3, Data4, col="blue")
+
+df <- data.frame(Data1, Data2)
+plot(df, col="green")
+
+```
+
+```{r}
+library(tidyverse)
+#show the first 10 and then last 10 rows of data in df...
+df %>%
+  head()
+df %>%
+  tail()
+```
+
+#2.4.10dataframe
+%>%R语言中的管道函数
+％>％来自dplyr包的管道函数，其作用是将前一步的结果直接传参给下一步的函数，从而省略了中间的赋值步骤，可以大量减少内存中的对象，节省内存。
+
+符号%>%，这是管道操作，其意思是将%>%左边的对象传递给右边的函数，作为第一个选项的设置（或剩下唯一一个选项的设置）
+
+data.frame[row,column]
+```{r}
+df[1:10, 1]
+df[5:15,]
+df[c(2,3,6),2]
+df[,1]
+```
+#2.4.11 Elements of a data frame
+介绍dplyr函数
+https://blog.csdn.net/weixin_42873544/article/details/105600548
+
+rename运行报错：之前的data已经改过（可以自己看一下右边的环境）
+```{r}
+Data1 <- c(1:100)
+Data2 <- c(101:200)
+library(dplyr)
+df <- df %>%
+  dplyr::rename(column1 = Data1, column2 = Data2)
+```
+ 选择
+```{r}
+df %>% 
+  dplyr::select(column1)
+df$column1
+df[["column1"]]
+```
+
+```{r}
+LondonDataOSK<- read.csv("/Users/lu/Documents/CASA005/w2/Prac2_data/LondonData2.csv", 
+                         header = TRUE, 
+                         sep = ",",  
+                         encoding = "latin1")
+
+#这个要注意不是光改名字就可以，而是要导出csv格式UTF-6才能真正成立
+```
+
+
+
+
+HERE可以帮助找到路径
+```{r}
+install.packages("here")
+library(here)
+here::here()
+LondonDataOSK<- read.csv(here::here("/Users/lu/Documents/CASA005/w2/Prac2_data/LondonData2.csv"), 
+                         header = TRUE, sep = ",",  
+                         encoding = "latin1")
+
+#!!!!!为什么从网页上这个read_csv读取不下来
+#wang the data in straight from the web using read_csv, 
+#skipping over the 'n/a' entries as you go...
+library(readr)
+LondonData <- read_csv("https://data.london.gov.uk/download/ward-profiles-and-atlas/772d2d64-e8c6-46cb-86f9-e52b4c7851bc/ward-profiles-excel-version.csv",
+                       locale = locale(encoding = "latin1"),
+                       na = "n/a")
+
+class(LondonData)
+class(LondonDataOSK)
+Datatypelist <- LondonData %>% 
+  summarise_all(class) %>%
+  pivot_longer(everything(), 
+               names_to="All_variables", 
+               values_to="Variable_class")
+
+Datatypelist
+
+LondonData <- read_csv("https://data.london.gov.uk/download/ward-profiles-and-atlas/772d2d64-e8c6-46cb-86f9-e52b4c7851bc/ward-profiles-excel-version.csv", 
+                       locale = locale(encoding = "latin1"))
+
+LondonData <- edit(LondonData)
+summary(df)
+
+
+
+```
+```{r}
+install.packages("janitor")
+
+```
+```{r}
+install.packages("maptools")
+install.packages(c("classInt", "tmap"))
+
+# might also need these ones
+install.packages(c("RColorBrewer", "sp", "rgeos", 
+                   "tmaptools", "sf", "downloader", "rgdal", 
+                   "geojsonio"))
+#hdkxs
+```
+
+#数据清洗方式
+https://blog.csdn.net/weixin_50293728/article/details/124576891
+
+
+tidyverse用：：
